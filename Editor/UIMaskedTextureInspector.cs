@@ -32,7 +32,6 @@ public class UIMaskedTextureInspector : UIBasicSpriteEditor  {
 		sp = NGUIEditorTools.DrawProperty("Mask Texture", serializedObject, "mMaskTexture");
 		if (sp != null)
 			mTex.maskTexture = sp.objectReferenceValue as Texture;
-		NGUIEditorTools.DrawProperty("Material (Test)", serializedObject, "mMat");
 
 		EditorGUI.BeginDisabledGroup(mTex == null || mTex.mainTexture == null || serializedObject.isEditingMultipleObjects);
 
