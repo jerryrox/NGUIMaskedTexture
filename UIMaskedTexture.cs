@@ -48,15 +48,7 @@ public class UIMaskedTexture : UIBasicSprite {
 		set {
 			if(mMaskTexture != value) {
 				RemoveFromPanel();
-				if(mMat != null) {
-					#if UNITY_EDITOR
-					if(EditorApplication.isPlaying)
-						Destroy(mMat);
-					#else
-					Destroy(mMat);
-					#endif
-					mMat = null;
-				}
+				RemoveMaterial();
 				mMaskTexture = value;
 				UpdateMaterial();
 				MarkAsChanged();
@@ -73,7 +65,9 @@ public class UIMaskedTexture : UIBasicSprite {
 			return mMat;
 		}
 		set {
-			// Nothing to do
+			RemoveFromPanel();
+			mMat = value;
+			MarkAsChanged();
 		}
 	}
 
@@ -90,9 +84,10 @@ public class UIMaskedTexture : UIBasicSprite {
 		}
 		set {
 			if (mShader != value) {
+				RemoveFromPanel();
+				RemoveMaterial();
 				mShader = value;
 				UpdateMaterial();
-
 				MarkAsChanged();
 			}
 		}
@@ -313,6 +308,18 @@ public class UIMaskedTexture : UIBasicSprite {
 
 		if (onPostFill != null)
 			onPostFill(this, offset, verts, uvs, cols);
+	}
+
+	void RemoveMaterial() {
+		if(mMat != null) {
+			#if UNITY_EDITOR
+			if(EditorApplication.isPlaying)
+				Destroy(mMat);
+			#else
+			Destroy(mMat);
+			#endif
+			mMat = null;
+		}
 	}
 
 	void CreateMaterial() {
