@@ -15,7 +15,7 @@ Like the Unity's built-in RawImage component, UITexture provides a convenient wa
 2. Specify the Main Texture and the Mask Texture (if required).
 3. Done!
   
-  For additional details, look <https://blog.naver.com/reisenmoe>
+  For additional details, look <https://blog.naver.com/reisenmoe/221309822030>
   See how changing the mask immediately shows changes in editor.
   
 ### Draw calls
