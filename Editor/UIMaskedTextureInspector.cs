@@ -34,6 +34,13 @@ public class UIMaskedTextureInspector : UIBasicSpriteEditor  {
 			mTex.maskTexture = sp.objectReferenceValue as Texture;
 		//NGUIEditorTools.DrawProperty("Material (Test)", serializedObject, "mMat");
 
+		sp = NGUIEditorTools.DrawProperty("Rebuild Material", serializedObject, "mRebuildMaterial");
+		bool rebuildMat = sp.boolValue;
+		mTex.isRebuildMaterial = rebuildMat;
+		if(!rebuildMat) {
+			EditorGUILayout.HelpBox("If this flag is disabled, this component will share its material along with other duplicated or prefab instances.", MessageType.Info);
+		}
+
 		EditorGUI.BeginDisabledGroup(mTex == null || mTex.mainTexture == null || serializedObject.isEditingMultipleObjects);
 
 		NGUIEditorTools.DrawRectProperty("UV Rect", serializedObject, "mRect");

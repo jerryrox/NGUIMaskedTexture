@@ -21,6 +21,7 @@ public class UIMaskedTexture : UIBasicSprite {
 	[HideInInspector][SerializeField] bool mFixedAspect = false;
 
 	[HideInInspector][SerializeField] Texture mMaskTexture;
+	[HideInInspector][SerializeField] bool mRebuildMaterial = true;
 
 	/// <summary>
 	/// Texture used by the UIMaskedTexture. You can set it directly, without the need to specify a material.
@@ -32,7 +33,9 @@ public class UIMaskedTexture : UIBasicSprite {
 		set {
 			if (mTexture != value) {
 				RemoveFromPanel();
+
 				mTexture = value;
+
 				MarkAsChanged();
 			}
 		}
@@ -42,18 +45,27 @@ public class UIMaskedTexture : UIBasicSprite {
 	/// Texture used by UIMaskedTexture for masking the main texture.
 	/// </summary>
 	public Texture maskTexture {
-		get {
-			return mMaskTexture;
-		}
+		get { return mMaskTexture; }
 		set {
 			if(mMaskTexture != value) {
 				RemoveFromPanel();
-				RemoveMaterial();
+
+				if(mRebuildMaterial)
+					RemoveMaterial();
 				mMaskTexture = value;
 				UpdateMaterial();
+
 				MarkAsChanged();
 			}
 		}
+	}
+
+	/// <summary>
+	/// Whether materials should be re-instantiated when maskTexture or shader is assigned to a different value.
+	/// </summary>
+	public bool isRebuildMaterial {
+		get { return mRebuildMaterial; }
+		set { mRebuildMaterial = value; }
 	}
 
 	/// <summary>
@@ -66,7 +78,9 @@ public class UIMaskedTexture : UIBasicSprite {
 		}
 		set {
 			RemoveFromPanel();
+
 			mMat = value;
+
 			MarkAsChanged();
 		}
 	}
@@ -85,9 +99,12 @@ public class UIMaskedTexture : UIBasicSprite {
 		set {
 			if (mShader != value) {
 				RemoveFromPanel();
-				RemoveMaterial();
+
+				if(mRebuildMaterial)
+					RemoveMaterial();
 				mShader = value;
 				UpdateMaterial();
+
 				MarkAsChanged();
 			}
 		}
