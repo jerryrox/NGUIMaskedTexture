@@ -31,5 +31,8 @@ Let's assume there is only one panel and two UIMaskedTexture objects in the scen
 ### To-Do
 * Fix mask textures applying to all duplicated instances during edit mode.
   
+### 2019-02-22
+* Added the option to fix UV rect of the mask texture.
+  
 #### License
 MIT

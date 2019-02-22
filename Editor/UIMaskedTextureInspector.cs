@@ -44,6 +44,12 @@ public class UIMaskedTextureInspector : UIBasicSpriteEditor  {
 		EditorGUI.BeginDisabledGroup(mTex == null || mTex.mainTexture == null || serializedObject.isEditingMultipleObjects);
 
 		NGUIEditorTools.DrawRectProperty("UV Rect", serializedObject, "mRect");
+		sp = NGUIEditorTools.DrawProperty("Fix Mask UV", serializedObject, "mFixMaskUV");
+		bool fixMaskUV = sp.boolValue;
+		mTex.fixMaskUV = fixMaskUV;
+		if(!fixMaskUV) {
+			EditorGUILayout.HelpBox("If this flag is disabled, the mask area will be affected by UV Rect settings.", MessageType.Info);
+		}
 
 		sp = serializedObject.FindProperty("mFixedAspect");
 		bool before = sp.boolValue;

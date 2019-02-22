@@ -22,6 +22,7 @@ public class UIMaskedTexture : UIBasicSprite {
 
 	[HideInInspector][SerializeField] Texture mMaskTexture;
 	[HideInInspector][SerializeField] bool mRebuildMaterial = true;
+	[HideInInspector][SerializeField] bool mFixMaskUV = true;
 
 	/// <summary>
 	/// Texture used by the UIMaskedTexture. You can set it directly, without the need to specify a material.
@@ -35,6 +36,7 @@ public class UIMaskedTexture : UIBasicSprite {
 				RemoveFromPanel();
 
 				mTexture = value;
+				UpdateMaterial();
 
 				MarkAsChanged();
 			}
@@ -80,6 +82,7 @@ public class UIMaskedTexture : UIBasicSprite {
 			RemoveFromPanel();
 
 			mMat = value;
+			UpdateMaterial();
 
 			MarkAsChanged();
 		}
@@ -91,7 +94,7 @@ public class UIMaskedTexture : UIBasicSprite {
 	public override Shader shader {
 		get {
 			if (mShader == null) {
-				mShader = Shader.Find("Unlit/Transparent Masked");
+				mShader = Shader.Find("Unlit/Transparent FixableMask");
 				UpdateMaterial();
 			}
 			return mShader;
@@ -117,7 +120,6 @@ public class UIMaskedTexture : UIBasicSprite {
 		get { return false; }
 	}
 
-
 	/// <summary>
 	/// Sprite's border. X = left, Y = bottom, Z = right, W = top.
 	/// </summary>
@@ -129,6 +131,7 @@ public class UIMaskedTexture : UIBasicSprite {
 			if (mBorder != value) {
 				mBorder = value;
 				MarkAsChanged();
+				UpdateMaterial();
 			}
 		}
 	}
@@ -136,7 +139,6 @@ public class UIMaskedTexture : UIBasicSprite {
 	/// <summary>
 	/// UV rectangle used by the texture.
 	/// </summary>
-
 	public Rect uvRect {
 		get {
 			return mRect;
@@ -145,7 +147,21 @@ public class UIMaskedTexture : UIBasicSprite {
 			if (mRect != value) {
 				mRect = value;
 				MarkAsChanged();
+				UpdateMaterial();
 			}
+		}
+	}
+
+	/// <summary>
+	/// Whether the mask UV should be preserved on changing the widget's UV rect.
+	/// </summary>
+	public bool fixMaskUV
+	{
+		get { return mFixMaskUV; }
+		set
+		{
+			mFixMaskUV = value;
+			UpdateMaterial();
 		}
 	}
 
@@ -225,6 +241,7 @@ public class UIMaskedTexture : UIBasicSprite {
 				mFixedAspect = value;
 				mDrawRegion = new Vector4(0f, 0f, 1f, 1f);
 				MarkAsChanged();
+				UpdateMaterial();
 			}
 		}
 	}
@@ -327,6 +344,13 @@ public class UIMaskedTexture : UIBasicSprite {
 			onPostFill(this, offset, verts, uvs, cols);
 	}
 
+	[ContextMenu("Reset material")]
+	void ResetMaterial()
+	{
+		RemoveMaterial();
+		UpdateMaterial();
+	}
+
 	void RemoveMaterial() {
 		if(mMat != null) {
 			#if UNITY_EDITOR
@@ -341,12 +365,23 @@ public class UIMaskedTexture : UIBasicSprite {
 
 	void CreateMaterial() {
 		if(mMat == null)
-			mMat = new Material(mShader ?? Shader.Find("Unlit/Transparent Masked"));
+			mMat = new Material(mShader ?? Shader.Find("Unlit/Transparent FixableMask"));
 	}
 
 	void UpdateMaterial() {
 		CreateMaterial();
 
 		mMat.SetTexture("_Mask", mMaskTexture);
+
+		if(mFixMaskUV)
+		{
+			mMat.SetTextureOffset("_MainTex", new Vector2(mRect.x, mRect.y));
+			mMat.SetTextureScale("_MainTex", new Vector2(mRect.width, mRect.height));
+		}
+		else
+		{
+			mMat.SetTextureOffset("_MainTex", Vector2.zero);
+			mMat.SetTextureScale("_MainTex", Vector2.one);
+		}
 	}
 }
