@@ -247,6 +247,35 @@ public class UIMaskedTexture : UIBasicSprite {
 	}
 
 	/// <summary>
+	/// Makes the current main texture's aspect ratio fit within the mask.
+	/// </summary>
+	public void FitTextureInMask()
+	{
+		var texture = mainTexture;
+		if(texture == null)
+			return;
+
+		float textureRatio = (float)texture.width / (float)texture.height;
+		float widgetRatio = (float)width / (float)height;
+
+		// If the texture is vertically longer in terms of widget ratio
+		if(textureRatio > widgetRatio)
+		{
+			// Fit texture to height.
+			float sizeX = height / textureRatio / width;
+			float offsetX = (1f - sizeX) / 2f;
+			uvRect = new Rect(offsetX, 0f, sizeX, 1f);
+		}
+		else if(textureRatio < widgetRatio)
+		{
+			// Fit texture to width.
+			float sizeY = height / (width / textureRatio);
+			float offsetY = (1f - sizeY) / 2f;
+			uvRect = new Rect(0f, offsetY, 1f, sizeY);
+		}
+	}
+
+	/// <summary>
 	/// Adjust the scale of the widget to make it pixel-perfect.
 	/// </summary>
 	public override void MakePixelPerfect () {
